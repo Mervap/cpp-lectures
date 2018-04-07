@@ -20,9 +20,77 @@
 </ol>
 <ul>
 <li>У первого меньше размер объектных файлов</li>
-<li>Но нет информации о типе</li>
 <li>Зато можно дебажить</li>
 <li>И компилируется быстрее (по сравнению с активным использованием 2 метода)</li>
+<li>Но нет информации о типе</li>
 <li>Но завалить все <code>void*</code> крайне неэффективно</li>
 </ul>
+<p>Специально для этих целей <code>template</code></p>
+<pre><code>template &lt;typename T&gt;
+struct vector {
+    T* data;
+    size_t size;
+    size_t capacity;
+}
+
+template &lt;typename T&gt; 
+T const&amp; max(T const&amp; a, T const&amp; b) {
+	return a &lt; b ? b : a;
+}
+
+max(1, 2);
+max&lt;int&gt;(1, 2); //Указывает какой конкретный тип
+</code></pre>
+<p>Для линковщика <code>template</code> функции помечаются как <code>inline</code><br>
+<code>Template</code> функции обычно описываются сразу в <code>header</code> файле</p>
+<h3 id="примерчики">Примерчики</h3>
+<p><code>mytype a(b)</code> - если <code>b</code> - тип, то <code>a</code> - функция, иначе - переменная</p>
+<p><code>mytype a(T::foo), T.foo(b), (T::foo)-b</code> - не знаем каст или операция вычитания<br>
+Поэтому если не написано <code>typename</code>, то считается  НЕ типом<br>
+<code>(T::foo) - b</code> - вычитание<br>
+<code>(typename T::foo) - b</code> - каст</p>
+<p><code>a &lt; b &gt; c</code> - <code>(a &lt; b) &gt; c</code> или  <code>a&lt;b&gt; c</code>?<br>
+`T::template foo<b> c</b></p>
+<h2 id="специализация">Специализация</h2>
+<p>Primary template</p>
+<pre><code>template &lt;typename T&gt; 
+struct vector{};
+</code></pre>
+<p>Explicit specialization</p>
+<pre><code>template&lt;&gt;
+struct vector&lt;bool&gt;{}; // Отдельная реализация для bool
+</code></pre>
+<p>Partical specialization</p>
+<pre><code>template&lt;typename U&gt;
+struct vector&lt;U*&gt;{}; // Отдельная реализация для указателей
+</code></pre>
+<p>А что если подходит под 2?</p>
+<pre><code>template&lt;typename T&gt;
+struct mytype{}; 
+
+template&lt;typename U&gt;
+struct mytype&lt;U*&gt;{}; 
+
+template&lt;typename V&gt;
+struct mytype&lt;V**&gt;{}; 
+
+mytype&lt;int&gt;;   // 1-ое
+mytype&lt;int*&gt;;  // 2-ое
+mytype&lt;int**&gt;; // Подходит и 2-ое и 3-е
+</code></pre>
+<p>В таких случаях выбирается более специализированное, т.е выберется 3-е</p>
+<pre><code>template&lt;typename T, typename P&gt;
+struct mytype{}; 
+
+template&lt;typename U, typename Q&gt;
+struct mytype&lt;U*, Q&gt;{}; 
+
+template&lt;typename V, typename R&gt;
+struct mytype&lt;V, R*&gt;{}; 
+
+mytype&lt;int, int&gt;;   // 1-ое
+mytype&lt;int*, int&gt;;  // 2-ое
+mytype&lt;int, int*&gt;;  // 3-е
+mytype&lt;int*, int*&gt;; // Ошибка, подходит и 2 и 3, но нет более специализированной
+</code></pre>
 
