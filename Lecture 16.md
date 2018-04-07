@@ -93,4 +93,25 @@ mytype&lt;int*, int&gt;;  // 2-ое
 mytype&lt;int, int*&gt;;  // 3-е
 mytype&lt;int*, int*&gt;; // Ошибка, подходит и 2 и 3, но нет более специализированной
 </code></pre>
+<p>Можно так</p>
+<pre><code>template&lt;typename V&gt;
+struct mytype&lt;V, int&gt;{}; // Больше параметров
+
+template&lt;typename U, typename V&gt;
+struct mytype&lt;pair&lt;U, V&gt;&gt;{}; // Меньше параметров
+</code></pre>
+<p>Запретить просто оставить без тела</p>
+<pre><code>template&lt;typename T&gt;
+struct mytype;
+</code></pre>
+<p>Иногда может потребоваться передать значение</p>
+<pre><code>std::array&lt;int, 10&gt;
+template&lt;typename T, site_t N&gt;
+struct array{};
+</code></pre>
+<p>Может быть любой целочисленный <strong>nontype</strong> параметр</p>
+<p>Специализации тут тоже работают</p>
+<pre><code>template&lt;typename T&gt;
+struct array&lt;T, 0&gt;{};
+</code></pre>
 
