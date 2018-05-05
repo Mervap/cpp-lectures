@@ -40,4 +40,8 @@
 </code></pre>
 <p>Тождественный <code>false</code> из-за <strong>UB</strong> (переполнение).</p>
 <p>Сдвиг более чем на битность регистра - <strong>UB</strong>.</p>
+<p><strong>Type-based alias analysis/strict aliasing rule</strong> - предположение, что указатели на никакие 2 типа не алиасятся (кроме указателя на один и тот же тип с точностью до <code>unsigned</code> + <code>char</code> может алиасить любой другой тип).</p>
+<p><code>-fno-strict-aliasing</code> - отключить данное предположение.<br>
+<code>-fsanitize=undefined</code><br>
+<code>-fsanitize=address</code></p>
 
